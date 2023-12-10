@@ -7,7 +7,7 @@ async function createPokemonCards() {
     const data = await response.json();
     const card = document.createElement('div');
     card.classList.add('card', data.types[0].type.name);
-
+    
     const img = document.createElement('img');
     img.src = data.sprites.front_default;
     img.alt = data.name;
@@ -46,11 +46,11 @@ async function createPokemonCards() {
 
     card.appendChild(type);
 
-
+  
     const moves = document.createElement('p');
     moves.textContent = `Moves: ${data.moves.map(move => move.move.name).slice(0, 4).join(', ')}`;
     card.appendChild(moves);
-
+ 
     // Append the card element to the row element
     row.appendChild(card);
   }
