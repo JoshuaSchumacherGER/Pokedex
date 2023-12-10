@@ -1,20 +1,27 @@
+// DOMContentLoaded ensures that the script is executed after the DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-  // Global Variables
+  // Global Variables declarations
   const pokemonPerPage = 10;
-  let nextPagePaginator = null;
+  let nextPagePaginator = null; // "null" is used to retrieve the first page
 
-  await listPokemons({pokemonPerPage});
+  await listPokemons({pokemonPerPage}); // Initial call to listPokemons
 
-  // event listeners
+  // Event Listeners declarations
   document.addEventListener('scroll', async () => {
     let documentHeight = document.documentElement.scrollHeight;
     let currentScroll = window.scrollY + window.innerHeight;
     if (currentScroll >= documentHeight) {
-      await listPokemons({nextPage: nextPagePaginator});
+      await listPokemons({nextPage: nextPagePaginator}); // Call to listPokemons when the user scrolls to the bottom of the page
     }
   });
 
   // Functions
+  /**
+   * Collects the data from the API and calls the function to create the HTML
+   * @param pokemonPerPage - Number of pokemons per page
+   * @param nextPage - URL of the next page, retrieved from the API
+   * @returns {Promise<void>}
+   */
   async function listPokemons({pokemonPerPage, nextPage}) {
     const paginator = await getPokemonsPaginatedAPI({pokemonPerPage, nextPage});
     console.log(paginator);
@@ -25,16 +32,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  /**
+   * Retrieves the Paginated related data from the API, based on the parameters
+   * When the nextPage parameter is null, the first page is retrieved
+   * or the next page is retrieved when the nextPage parameter is not null
+   * @param pokemonPerPage - Number of pokemons per page
+   * @param nextPage - URL of the next page, retrieved from the API
+   * @returns {Promise<any>}
+   */
   async function getPokemonsPaginatedAPI({pokemonPerPage, nextPage}) {
     const response = await fetch(nextPage ?? `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${pokemonPerPage}`);
     return await response.json();
   }
 
+  /**
+   * Retrieves the Pokemon related data from the API, based on the ID
+   * @param id - ID of the pokemon
+   * @returns {Promise<any>}
+   */
   async function getPokemonAPI(id) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     return await response.json();
   }
 
+  /**
+   * Creates the HTML for the Pokemon card and appends it to the DOM
+   * @param pokemon - Pokemon object
+   */
   function createPokemonCardHtml(pokemon) {
     const row = document.querySelector('.row');
     console.log(pokemon);
