@@ -1,13 +1,17 @@
-
-const row = document.querySelector('.row');
+document.addEventListener('DOMContentLoaded', () => {
+  // Call the createPokemonCards() function to create the Pokemon cards
+  createPokemonCards();
+});
 
 async function createPokemonCards() {
+  const row = document.querySelector('.row');
+
   for (let i = 1; i <= 1008; i++) {
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
     const data = await response.json();
     const card = document.createElement('div');
     card.classList.add('card', data.types[0].type.name);
-    
+
     const img = document.createElement('img');
     img.src = data.sprites.front_default;
     img.alt = data.name;
@@ -46,15 +50,12 @@ async function createPokemonCards() {
 
     card.appendChild(type);
 
-  
+
     const moves = document.createElement('p');
     moves.textContent = `Moves: ${data.moves.map(move => move.move.name).slice(0, 4).join(', ')}`;
     card.appendChild(moves);
- 
+
     // Append the card element to the row element
     row.appendChild(card);
   }
 }
-
-// Call the createPokemonCards() function to create the Pokemon cards
-createPokemonCards();
