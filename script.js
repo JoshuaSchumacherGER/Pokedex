@@ -1,25 +1,32 @@
 document.addEventListener('DOMContentLoaded', async () => {
   // Global Variables
-  let offset = 0;
-  const limit = 20;
-  let nextPage = "";
+  const pokemonPerPage = 10;
+  let nextPagePaginator = null;
 
-  // Call the listPokemons() function to create the Pokemon cards
-  await listPokemons();
+  await listPokemons({pokemonPerPage});
+
+  // event listeners
+  document.addEventListener('scroll', async () => {
+    let documentHeight = document.documentElement.scrollHeight;
+    let currentScroll = window.scrollY + window.innerHeight;
+    if (currentScroll >= documentHeight) {
+      await listPokemons({nextPage: nextPagePaginator});
+    }
+  });
 
   // Functions
-  async function listPokemons() {
-    const paginator = await getPokemonsPaginatedAPI(offset, limit);
+  async function listPokemons({pokemonPerPage, nextPage}) {
+    const paginator = await getPokemonsPaginatedAPI({pokemonPerPage, nextPage});
     console.log(paginator);
-    nextPage = paginator.next;
+    nextPagePaginator = paginator.next;
     for (const pokemon of paginator.results) {
       const data = await getPokemonAPI(pokemon.name);
       createPokemonCardHtml(data);
     }
   }
 
-  async function getPokemonsPaginatedAPI(offset, limit) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`);
+  async function getPokemonsPaginatedAPI({pokemonPerPage, nextPage}) {
+    const response = await fetch(nextPage ?? `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${pokemonPerPage}`);
     return await response.json();
   }
 
