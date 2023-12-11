@@ -3,11 +3,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Global Variables declarations
   const pokemonPerPage = 10;
   let nextPagePaginator = null; // "null" is used to retrieve the first page
+  let isFetchingPokemons = false;
 
   await listPokemons({pokemonPerPage}); // Initial call to listPokemons
 
   // Event Listeners declarations
   document.addEventListener('scroll', async () => {
+    if (isFetchingPokemons) return;
     let documentHeight = document.documentElement.scrollHeight;
     let currentScroll = window.scrollY + window.innerHeight;
     if (currentScroll >= documentHeight) {
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
    * @returns {Promise<void>}
    */
   async function listPokemons({pokemonPerPage, nextPage}) {
+    isFetchingPokemons = true;
     const paginator = await getPokemonsPaginatedAPI({pokemonPerPage, nextPage});
     console.log(paginator);
     nextPagePaginator = paginator.next;
@@ -30,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const data = await getPokemonAPI(pokemon.name);
       createPokemonCardHtml(data);
     }
+    isFetchingPokemons = false;
   }
 
   /**
