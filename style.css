@@ -125,6 +125,12 @@ h1 {
   min-height: 30vw;
   max-height: auto;
 }
+
+#info-window-content img{
+  width: 50%;
+  margin: 0 auto;
+  display: block;
+}
 #info-window-content table {
   width: 20vw;
   min-width: 20vw;
