@@ -1,4 +1,3 @@
-
 const row = document.querySelector('.row');
 
 async function createPokemonCards() {
@@ -48,13 +47,39 @@ async function createPokemonCards() {
 
   
     const moves = document.createElement('p');
-    moves.textContent = `Moves: ${data.moves.map(move => move.move.name).slice(0, 4).join(', ')}`;
+    moves.textContent = `Moves: ${data.moves.map(move => move.move.name).slice(0, 3).join(', ')}`;
     card.appendChild(moves);
  
     // Append the card element to the row element
     row.appendChild(card);
+
+
+    /*listens if a card has been clicked and then executes the code that opens 
+    the window with further information about the Pokemon.*/
+    card.addEventListener('click', () => {
+      document.getElementById("pokemon-name").innerHTML = data.name;
+      document.getElementById("pokemon-image").src = data.sprites.front_default;
+      document.getElementById("abilities").innerHTML = data.abilities.map(ability => ability.ability.name).slice(0, 3).join(', ');
+      
+      //Checks whether the pokemon is holding items or not.
+      if(data.held_items.map(item => item.item.name).slice(0, 4).join(', ') == ""){
+        document.getElementById("held_items").innerHTML = "/"
+      } else {
+        document.getElementById("held_items").innerHTML = data.held_items.map(item => item.item.name).slice(0, 3).join(', ');
+      }
+      document.getElementById("type").innerHTML = data.types.map(types => types.type.name).join(', ');
+      document.getElementById("moves").innerHTML = data.moves.map(move => move.move.name).slice(0, 3).join(', ');
+      document.getElementById("weight").innerHTML = data.weight/10+" kg";
+      document.getElementById("cries").src = data.cries.latest;
+      document.getElementById("info-window-wrapper").style.display = "flex";
+    });
   }
 }
 
 // Call the createPokemonCards() function to create the Pokemon cards
 createPokemonCards();
+
+function closeInfoWindow() {
+  document.getElementById("info-window-wrapper").style.display = "none";
+}
+
