@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pokedex</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
       <h1>Pokedex</h1>
       <div class="lang-menu">
-        <div class="selected-lang">
-          
-        </div>
-        
-        
+        <div class="selected-lang"></div>
       </div>
-      <p> please wait a few secound bevore your change the langugage :)<p>
-      
-      <div id="language-selector">
-      <label for="language">Select your Language:</label>
-      <select id="language">
-        <option value="de">Deutsch</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>         
-      </select>
-      <br>
+      <p>Please wait a few seconds before selecting your language!)</p>
+      <p></p>
+
+      <div class="language-selector" id="language-selector">
+        <label for="language">Select your Language:</label>
+        <select id="language">
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+        </select>
+        <br />
+      </div>
+      <div class="row card-container"></div>
     </div>
-      <div class="row"></div>
-    </div>
-    <br>
+    <br />
 
     <!--More info window-->
-    <div id="info-window-wrapper" style="display: none;">
+    <div id="info-window-wrapper" style="display: none">
       <div id="info-window">
         <div id="info-window-content"></div>
       </div>
