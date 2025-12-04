@@ -5,31 +5,86 @@ const languageSelect = document.getElementById("language");
 // Translations for different languages
 const translations = {
   en: {
+    title: "Pokedex",
+    subtitle: "Catch, explore and study your favourite Pokémon.",
+    languageLabel: "Select your language:",
+    waitMessage: "Please wait a few seconds while the Pokédex loads the data.",
     abilities: "Abilities",
     held_items: "Held items",
     type: "Type",
     moves: "Moves",
     weight: "Weight",
     cry: "Cry",
+    statsTitle: "Stats",
+    spriteLabel: "Sprite",
+    spriteFront: "Front",
+    spriteBack: "Back",
+    spriteFrontShiny: "Front (Shiny)",
+    spriteBackShiny: "Back (Shiny)",
     close: "Close",
+    stats: {
+      hp: "HP",
+      attack: "Attack",
+      defense: "Defense",
+      "special-attack": "Sp. Atk",
+      "special-defense": "Sp. Def",
+      speed: "Speed",
+    },
   },
   de: {
+    title: "Pokedex",
+    subtitle: "Fange, entdecke und studiere deine Lieblings-Pokémon.",
+    languageLabel: "Sprache wählen:",
+    waitMessage:
+      "Bitte warte ein paar Sekunden, während der Pokedex die Daten lädt.",
     abilities: "Fähigkeiten",
     held_items: "Getragene Gegenstände",
     type: "Typ",
-    moves: "Bewegungen",
+    moves: "Attacken",
     weight: "Gewicht",
     cry: "Schrei",
+    statsTitle: "Statuswerte",
+    spriteLabel: "Sprite",
+    spriteFront: "Vorne",
+    spriteBack: "Hinten",
+    spriteFrontShiny: "Vorne (Shiny)",
+    spriteBackShiny: "Hinten (Shiny)",
     close: "Schließen",
+    stats: {
+      hp: "KP",
+      attack: "Angriff",
+      defense: "Verteidigung",
+      "special-attack": "Spezial-Angriff",
+      "special-defense": "Spezial-Verteidigung",
+      speed: "Initiative",
+    },
   },
   ja: {
+    title: "ポケモン図鑑",
+    subtitle: "お気に入りのポケモンを集めて、発見して、研究しよう。",
+    languageLabel: "言語を選択:",
+    waitMessage: "ポケモン図鑑がデータを読み込むまで少々お待ちください。",
     abilities: "特性",
     held_items: "持ち物",
     type: "タイプ",
     moves: "技",
     weight: "重さ",
     cry: "鳴き声",
+    statsTitle: "能力値",
+    spriteLabel: "スプライト",
+    spriteFront: "前",
+    spriteBack: "後ろ",
+    spriteFrontShiny: "前 (色違い)",
+    spriteBackShiny: "後ろ (色違い)",
     close: "閉じる",
+    stats: {
+      hp: "HP",
+      attack: "こうげき",
+      defense: "ぼうぎょ",
+      "special-attack": "とくこう",
+      "special-defense": "とくぼう",
+      speed: "すばやさ",
+    },
   },
 };
 
@@ -55,10 +110,25 @@ const typeColors = new Map([
 ]);
 
 // Default language
-let currentLanguage = "en";
+let currentLanguage = "de";
 
 // Active request controller to manage fetch requests
 let activeRequestController = null;
+
+// Helper to apply base UI translations
+function applyBaseTranslations(language) {
+  const t = translations[language] || translations.en;
+
+  const title = document.getElementById("app-title");
+  const subtitle = document.getElementById("app-subtitle");
+  const langLabel = document.getElementById("language-label");
+  const waitMessage = document.getElementById("wait-message");
+
+  if (title) title.textContent = t.title;
+  if (subtitle) subtitle.textContent = t.subtitle;
+  if (langLabel) langLabel.textContent = t.languageLabel;
+  if (waitMessage) waitMessage.textContent = t.waitMessage;
+}
 
 // Fetch translated data from API
 async function fetchTranslatedData(url, language, fallbackLanguage = "en") {
@@ -282,7 +352,55 @@ async function createPokemonCard(id, language, controller) {
     // Event listener for card click
     card.addEventListener("click", () => {
       document.getElementById("pokemon-name").innerHTML = translatedName;
-      document.getElementById("pokemon-image").src = data.sprites.front_default;
+      const pokemonImageElement = document.getElementById("pokemon-image");
+      const spriteSelect = document.getElementById("sprite-select");
+
+      // Build available sprite options
+      const spriteOptions = [];
+      if (data.sprites.front_default) {
+        spriteOptions.push({ key: "front_default", label: translations[language].spriteFront });
+      }
+      if (data.sprites.back_default) {
+        spriteOptions.push({ key: "back_default", label: translations[language].spriteBack });
+      }
+      if (data.sprites.front_shiny) {
+        spriteOptions.push({ key: "front_shiny", label: translations[language].spriteFrontShiny });
+      }
+      if (data.sprites.back_shiny) {
+        spriteOptions.push({ key: "back_shiny", label: translations[language].spriteBackShiny });
+      }
+
+      if (spriteSelect) {
+        spriteSelect.innerHTML = "";
+        spriteOptions.forEach((opt, index) => {
+          const option = document.createElement("option");
+          option.value = opt.key;
+          option.textContent = opt.label;
+          if (index === 0) option.selected = true;
+          spriteSelect.appendChild(option);
+        });
+
+        const updateSpriteFromSelect = () => {
+          const selectedKey = spriteSelect.value;
+          const spriteUrl = data.sprites[selectedKey];
+          if (pokemonImageElement && spriteUrl) {
+            pokemonImageElement.src = spriteUrl;
+          }
+        };
+
+        // Set initial sprite
+        if (spriteOptions.length > 0) {
+          spriteSelect.value = spriteOptions[0].key;
+          updateSpriteFromSelect();
+        } else if (pokemonImageElement && data.sprites.front_default) {
+          pokemonImageElement.src = data.sprites.front_default;
+        }
+
+        spriteSelect.onchange = updateSpriteFromSelect;
+      } else if (pokemonImageElement && data.sprites.front_default) {
+        pokemonImageElement.src = data.sprites.front_default;
+      }
+
       document.getElementById("abilities").innerHTML = abilities.join(", ");
 
       const heldItems =
@@ -296,6 +414,16 @@ async function createPokemonCard(id, language, controller) {
 
       document.getElementById("type").innerHTML = types.join(", ");
       document.getElementById("moves").innerHTML = moves.join(", ");
+
+      // Stats
+      const statLabels = translations[language].stats || translations.en.stats;
+      const statsFormatted = data.stats
+        .map((stat) => {
+          const label = statLabels[stat.stat.name] || stat.stat.name;
+          return `${label}: ${stat.base_stat}`;
+        })
+        .join(" | ");
+      document.getElementById("stats").innerHTML = statsFormatted;
       document.getElementById("weight").innerHTML = data.weight / 10 + " kg";
       document.getElementById("cries").src = data.cries
         ? data.cries.latest
@@ -344,6 +472,19 @@ async function createPokemonCards(language = "en") {
   infoWindow.appendChild(pokemonName);
   infoWindow.appendChild(pokemonImage);
 
+  // Sprite selector
+  const spriteSelectorWrapper = document.createElement("div");
+  spriteSelectorWrapper.id = "sprite-selector-wrapper";
+  const spriteLabel = document.createElement("label");
+  spriteLabel.id = "sprite-label";
+  spriteLabel.setAttribute("for", "sprite-select");
+  spriteLabel.textContent = translations[language].spriteLabel;
+  const spriteSelect = document.createElement("select");
+  spriteSelect.id = "sprite-select";
+  spriteSelectorWrapper.appendChild(spriteLabel);
+  spriteSelectorWrapper.appendChild(spriteSelect);
+  infoWindow.appendChild(spriteSelectorWrapper);
+
   // Close button event listener
   document.getElementById("closing-button").addEventListener("click", () => {
     document.getElementById("info-window-wrapper").style.display = "none";
@@ -375,6 +516,10 @@ async function createPokemonCards(language = "en") {
             <td id="weight"></td>
         </tr>
         <tr>
+            <th>${translations[language].statsTitle}</th>
+            <td id="stats"></td>
+        </tr>
+        <tr>
             <th>${translations[language].cry}</th>
             <td>
                 <audio controls src="" id="cries" style="height: 25px; width: 100%;"></audio>
@@ -393,9 +538,11 @@ languageSelect.addEventListener("change", (event) => {
   const selectedLanguage = event.target.value;
   if (currentLanguage !== selectedLanguage) {
     currentLanguage = selectedLanguage;
+    applyBaseTranslations(selectedLanguage);
     createPokemonCards(selectedLanguage);
   }
 });
 
 // Initialize with default language
-createPokemonCards();
+applyBaseTranslations(currentLanguage);
+createPokemonCards(currentLanguage);

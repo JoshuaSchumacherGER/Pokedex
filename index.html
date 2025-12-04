@@ -8,27 +8,31 @@
   </head>
   <body>
     <div class="container">
-      <h1>Pokedex</h1>
-      <div class="lang-menu">
-        <div class="selected-lang"></div>
-      </div>
-      <p>Please wait a few seconds before selecting your language!)</p>
-      <p></p>
+      <header class="app-header">
+        <h1 id="app-title">Pokedex</h1>
+        <p id="app-subtitle">
+          Fange, entdecke und studiere deine Lieblings-Pokémon.
+        </p>
+      </header>
 
-      <div class="language-selector" id="language-selector">
-        <label for="language">Select your Language:</label>
-        <select id="language">
-          <option value="de">Deutsch</option>
-          <option value="en">English</option>
-          <option value="ja">日本語</option>
-        </select>
-        <br />
-      </div>
+      <section class="top-bar">
+        <div class="language-selector" id="language-selector">
+          <label for="language" id="language-label">Sprache wählen:</label>
+          <select id="language">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+          </select>
+        </div>
+        <p id="wait-message">
+          Bitte warte ein paar Sekunden, während der Pokedex die Daten lädt.
+        </p>
+      </section>
+
       <div class="row card-container"></div>
     </div>
-    <br />
 
-    <!--More info window-->
+    <!-- More info window -->
     <div id="info-window-wrapper" style="display: none">
       <div id="info-window">
         <div id="info-window-content"></div>
